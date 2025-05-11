@@ -1,7 +1,15 @@
 'use server';
 
-import { createTrain, createWagon, searchTrains } from './queries';
+import {
+    createTrain,
+    createWagon,
+    getDepartureStations,
+    getDestinationStations,
+    searchTrains,
+} from './queries';
 import { database } from '@/utils/constants';
+
+import { revalidatePath } from 'next/cache';
 
 import { Train, WagonType } from '@/types/railway';
 
@@ -53,8 +61,22 @@ export async function fetchSearchTrains(
     const [rows] = await database.query(searchTrains, [
         departureStation,
         arrivalStation,
-        departureDate,
+        departureDate.toISOString().split('T')[0],
     ]);
 
+    revalidatePath('/trains', 'page');
+
     return rows as Train[];
+}
+
+export async function fetchStations(): Promise<string[][]> {
+    const [from]: any = await database.query(getDepartureStations);
+    const [to]: any = await database.query(getDestinationStations);
+
+    revalidatePath('/', 'page');
+
+    return [
+        from.map((obj: any) => obj.departureStation),
+        to.map((obj: any) => obj.arrivalStation),
+    ] as any;
 }

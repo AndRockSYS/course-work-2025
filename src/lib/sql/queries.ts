@@ -38,8 +38,8 @@ export const searchTrains = `
 SELECT * FROM train
 WHERE train.departureStation = ?
 AND train.arrivalStation = ?
-AND train.departureDate = ?
-AND train.departureDate >= NOW()
+AND DATE(train.departureDate) = ?
+AND DATE(train.departureDate) > NOW()
 `;
 
 export const getWagonsForTrain = `
@@ -54,3 +54,11 @@ WHERE ticket.wagonId = ?
 `;
 
 export const getAdditionalServices = `SELECT * FROM additionalService`;
+
+export const getDepartureStations = `
+SELECT DISTINCT departureStation from train
+`;
+
+export const getDestinationStations = `
+SELECT DISTINCT arrivalStation from train
+`;
