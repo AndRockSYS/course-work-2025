@@ -1,21 +1,62 @@
 'use client';
 
-import { addTrain, fetchSearchTrains } from '@/lib/sql/train';
+import Image from 'next/image';
+import Select from '@/components/ui/select';
+
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
+import { fetchSearchTrains, fetchStations } from '@/lib/sql/train';
 
 export default function Home() {
+    const [departureStation, setDepartureStation] = useState('');
+    const [arrivalStation, setArrivalStation] = useState('');
+    const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
+
+    const { data: stations } = useQuery({
+        queryKey: ['stations'],
+        queryFn: async () => await fetchStations(),
+        initialData: [[], []],
+    });
+
     return (
-        <main className='flex flex-col'>
+        <main className='p-4 [&>*]:w-full flex flex-col gap-y-8'>
+            <h4 className='font-extrabold text-xl text-center'>Залізниця</h4>
+            <section className='flex flex-col gap-y-4'>
+                <Select
+                    placeholder='Станція відправлення'
+                    name='from'
+                    options={stations[0]}
+                    setValue={setDepartureStation}
+                    value={departureStation}
+                    image='/icons/departure.svg'
+                />
+                <Select
+                    placeholder='Станція прибуття'
+                    name='to'
+                    options={stations[1]}
+                    setValue={setArrivalStation}
+                    value={arrivalStation}
+                    image='/icons/arrival.svg'
+                />
+                <section className='select'>
+                    <Image src='/icons/date.svg' alt='date' width={18} height={18} />
+                    <input
+                        className='appearance-none'
+                        type='date'
+                        value={departureDate}
+                        onChange={(event) => setDepartureDate(event.currentTarget.value)}
+                    />
+                </section>
+            </section>
+
             <button
-                onClick={() => addTrain(new Date(Date.now()), new Date(Date.now()), 'from', 'to')}
-            >
-                Add Trains
-            </button>
-            <button
+                className='btn-primary'
                 onClick={() =>
-                    fetchSearchTrains('from', 'to', new Date('2025-05-10T11:46:57.000Z'))
+                    fetchSearchTrains(departureStation, arrivalStation, new Date(departureDate))
                 }
             >
-                Search Trains
+                Пошук Рейсів
             </button>
         </main>
     );
