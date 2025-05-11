@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Select from '@/components/ui/select';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchSearchTrains, fetchStations } from '@/lib/sql/train';
@@ -12,6 +12,8 @@ export default function Home() {
     const [departureStation, setDepartureStation] = useState('');
     const [arrivalStation, setArrivalStation] = useState('');
     const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
+
+    const dateRef = useRef<HTMLInputElement>(null);
 
     const { data: stations } = useQuery({
         queryKey: ['stations'],
@@ -39,9 +41,10 @@ export default function Home() {
                     value={arrivalStation}
                     image='/icons/arrival.svg'
                 />
-                <section className='select'>
+                <section className='select' onClick={() => dateRef.current?.showPicker()}>
                     <Image src='/icons/date.svg' alt='date' width={18} height={18} />
                     <input
+                        ref={dateRef}
                         className='appearance-none'
                         type='date'
                         value={departureDate}
@@ -49,7 +52,6 @@ export default function Home() {
                     />
                 </section>
             </section>
-
             <button
                 className='btn-primary'
                 onClick={() =>
