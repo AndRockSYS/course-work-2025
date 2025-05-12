@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Public_Sans } from 'next/font/google';
 
 import QueryProvider from '@/context/QueryProvider';
+import StoreProvider from '@/context/StoreProvider';
 
 import './globals.css';
 
@@ -24,7 +25,9 @@ export default function RootLayout({
     return (
         <html lang='en'>
             <QueryProvider>
-                <body className={`${publicSans.variable} antialiased`}>{children}</body>
+                <StoreProvider>
+                    <body className={`${publicSans.variable} antialiased`}>{children}</body>
+                </StoreProvider>
             </QueryProvider>
         </html>
     );
