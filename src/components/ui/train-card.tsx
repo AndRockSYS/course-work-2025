@@ -2,8 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useAppDispatch } from '@/lib/redux/hooks';
 
 import { fetchWagonByTrain } from '@/lib/sql/train';
+import { setTrainWagon } from '@/lib/redux/ticket-slice';
 
 import { formatTravelTile } from '@/utils/date';
 import { twMerge } from 'tailwind-merge';
@@ -15,18 +17,18 @@ interface Props {
 }
 
 export default function TrainCard({ train }: Props) {
+    const dispatch = useAppDispatch();
+
     const { departure, arrival, travelTime } = formatTravelTile(
         train.departureDate,
         train.arrivalDate
     );
 
     const [showWagons, setShowWagons] = useState(false);
-
     const { data: wagons } = useQuery({
         queryKey: ['wagons', train.trainId],
         queryFn: async () => await fetchWagonByTrain(train.trainId),
         initialData: [],
-        enabled: showWagons,
     });
 
     return (
@@ -51,13 +53,18 @@ export default function TrainCard({ train }: Props) {
                     <figure
                         className={twMerge('p-4 rounded-xl gap-y-1.5 bg-tetriary')}
                         key={wagon.wagonId}
+                        onClick={() =>
+                            dispatch(
+                                setTrainWagon({ trainId: train.trainId, wagonId: wagon.wagonId })
+                            )
+                        }
                     >
                         <div className='text-lg font-extrabold'>
                             <h3>{wagon.wagonType}</h3>
                             <h3>{wagon.price}₴</h3>
                         </div>
                         <div className='text-sm text-secondary'>
-                            <h5>Місць: {wagon.seatsAmount}</h5>
+                            <h5>Місць: {wagon.freeSeats}</h5>
                             <h5>Вагон №{wagon.wagonNumber}</h5>
                         </div>
                     </figure>
