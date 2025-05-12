@@ -1,5 +1,6 @@
 'use server';
 
+import SeatDrawer from '@/components/seat-drawer';
 import TrainCard from '@/components/ui/train-card';
 
 import { fetchedSearchedTrains } from '@/lib/sql/train';
@@ -27,6 +28,7 @@ export default async function Trains({ searchParams }: Props) {
             {trains.map((train) => (
                 <TrainCard key={train.trainId} train={train} />
             ))}
+            <SeatDrawer />
         </main>
     );
 }

@@ -7,6 +7,8 @@
     --primary: #3a63ed;
     --secondary: #808080;
     --tetriary: #f5f5f5;
+
+    --transparent: rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
@@ -16,6 +18,8 @@
     --color-primary: var(--primary);
     --color-secondary: var(--secondary);
     --color-tetriary: var(--tetriary);
+
+    --color-transparent: var(--transparent);
 
     --font-public-sans: var(--font-public-sans);
 }
@@ -27,6 +31,15 @@
 
     .card-shadow {
         box-shadow: 0px 1px 4px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .snap-container {
+        scroll-snap-type: both mandatory;
+        overscroll-behavior: contain;
+    }
+
+    .snap-container::-webkit-scrollbar {
+        display: none;
     }
 }
 
