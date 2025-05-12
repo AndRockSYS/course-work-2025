@@ -1,8 +1,8 @@
 'use server';
 
-import WagonCard from '@/components/ui/wagon-card';
+import TrainCard from '@/components/ui/train-card';
 
-import { fetchSearchedWagons } from '@/lib/sql/train';
+import { fetchedSearchedTrains } from '@/lib/sql/train';
 
 interface Props {
     searchParams: Promise<{
@@ -14,7 +14,7 @@ interface Props {
 
 export default async function Trains({ searchParams }: Props) {
     const { from, to, date } = await searchParams;
-    const wagons = await fetchSearchedWagons(from, to, new Date(date));
+    const trains = await fetchedSearchedTrains(from, to, new Date(date));
 
     return (
         <main className='p-4 flex flex-col gap-y-2'>
@@ -24,8 +24,8 @@ export default async function Trains({ searchParams }: Props) {
                 </h2>
                 <h3>{date}</h3>
             </div>
-            {wagons.map((wagon) => (
-                <WagonCard key={wagon.wagonId} wagon={wagon} />
+            {trains.map((train) => (
+                <TrainCard key={train.trainId} train={train} />
             ))}
         </main>
     );

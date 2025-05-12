@@ -34,12 +34,21 @@ INSERT INTO ticketService
 (?, ?)
 `;
 
-export const selectWagons = `
-SELECT wagon.*, departureDate, arrivalDate FROM wagon, train
+export const selectTrains = `
+SELECT train.*, MIN(price) AS startingPrice
+FROM wagon, train
 WHERE train.departureStation = ?
 AND train.arrivalStation = ?
 AND DATE(train.departureDate) = ?
 AND train.departureDate > NOW()
+AND seatsAmount > 0
+GROUP BY train.trainId
+`;
+
+export const selectWagonsForTrain = `
+SELECT *
+FROM wagon
+WHERE wagon.trainId = ?
 AND seatsAmount > 0
 `;
 

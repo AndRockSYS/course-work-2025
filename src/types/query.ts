@@ -1,6 +1,5 @@
-import { Wagon } from './railway';
+import { Train } from './railway';
 
-export interface SearchedWagon extends Wagon {
-    departureDate: Date;
-    arrivalDate: Date;
+export interface SearchedTrain extends Train {
+    startingPrice: number;
 }
