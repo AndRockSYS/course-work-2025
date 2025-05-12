@@ -1,3 +1,17 @@
+// Basic getters
+
+export const getAdditionalServices = `SELECT * FROM additionalService`;
+
+export const getDepartureStations = `
+SELECT DISTINCT departureStation from train
+`;
+
+export const getDestinationStations = `
+SELECT DISTINCT arrivalStation from train
+`;
+
+// Data creation
+
 export const createTrain = `
 INSERT INTO train
 (arrivalDate, departureDate, departureStation, arrivalStation)
@@ -34,6 +48,8 @@ INSERT INTO ticketService
 (?, ?)
 `;
 
+// Custom queries for booking
+
 export const selectTrains = `
 SELECT train.*, MIN(price) AS startingPrice
 FROM wagon, train
@@ -41,23 +57,44 @@ WHERE train.departureStation = ?
 AND train.arrivalStation = ?
 AND DATE(train.departureDate) = ?
 AND train.departureDate > NOW()
-AND seatsAmount > 0
-GROUP BY train.trainId
+AND seatsAmount > (
+	SELECT COUNT(*)
+	FROM ticket
+	WHERE ticket.wagonId = wagon.wagonId
+    )
+GROUP BY train.trainId;
+
 `;
 
 export const selectWagonsForTrain = `
-SELECT *
+SELECT *, wagon.seatsAmount - (
+	SELECT COUNT(*)
+    FROM ticket
+    WHERE ticket.wagonId = wagon.wagonId
+	) as freeSeats
 FROM wagon
 WHERE wagon.trainId = ?
-AND seatsAmount > 0
+HAVING freeSeats > 0
 `;
 
-export const getAdditionalServices = `SELECT * FROM additionalService`;
-
-export const getDepartureStations = `
-SELECT DISTINCT departureStation from train
-`;
-
-export const getDestinationStations = `
-SELECT DISTINCT arrivalStation from train
+export const selectFreeSeatsNumberForWagon = `
+WITH RECURSIVE allSeats AS (
+    SELECT 1 AS seatNumber
+    UNION ALL
+    SELECT seatNumber + 1
+    FROM allSeats
+    WHERE seatNumber < (
+		SELECT seatsAmount
+        FROM wagon
+        WHERE wagon.wagonId = ?
+    )
+)
+SELECT seatNumber
+FROM allSeats
+WHERE seatNumber NOT IN (
+    SELECT seatNumber 
+    FROM ticket
+    WHERE ticket.wagonId = ?
+)
+ORDER BY seatNumber
 `;
