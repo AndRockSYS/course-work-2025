@@ -34,23 +34,13 @@ INSERT INTO ticketService
 (?, ?)
 `;
 
-export const searchTrains = `
-SELECT * FROM train
+export const selectWagons = `
+SELECT wagon.*, departureDate, arrivalDate FROM wagon, train
 WHERE train.departureStation = ?
 AND train.arrivalStation = ?
 AND DATE(train.departureDate) = ?
-AND DATE(train.departureDate) > NOW()
-`;
-
-export const getWagonsForTrain = `
-SELECT * FROM wagon
-WHERE wagon.trainId = ?
-`;
-
-export const selectTakesSeatsForWagon = `
-SELECT ticket.seatNumber as taken FROM ticket
-JOIN wagon USING(trainId)
-WHERE ticket.wagonId = ?
+AND train.departureDate > NOW()
+AND seatsAmount > 0
 `;
 
 export const getAdditionalServices = `SELECT * FROM additionalService`;
