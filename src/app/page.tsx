@@ -4,11 +4,14 @@ import Image from 'next/image';
 import Select from '@/components/ui/select';
 
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 
-import { fetchSearchTrains, fetchStations } from '@/lib/sql/train';
+import { fetchStations } from '@/lib/sql/train';
 
 export default function Home() {
+    const router = useRouter();
+
     const [departureStation, setDepartureStation] = useState('');
     const [arrivalStation, setArrivalStation] = useState('');
     const [departureDate, setDepartureDate] = useState(new Date().toISOString().split('T')[0]);
@@ -54,9 +57,12 @@ export default function Home() {
             </section>
             <button
                 className='btn-primary'
-                onClick={() =>
-                    fetchSearchTrains(departureStation, arrivalStation, new Date(departureDate))
-                }
+                onClick={() => {
+                    if (departureStation && arrivalStation)
+                        router.push(
+                            `/trains?from=${departureStation}&to=${arrivalStation}&date=${departureDate}`
+                        );
+                }}
             >
                 Пошук Рейсів
             </button>
