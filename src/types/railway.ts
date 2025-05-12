@@ -41,14 +41,14 @@ export interface Train {
     departureDate: Date;
     arrivalDate: Date;
     departureStation: string;
-    destinationStation: string;
+    arrivalStation: string;
 }
 
 export type WagonType = 'Плацкарт' | 'Купе' | 'Люкс';
 
 export interface Wagon {
     wagonId: number;
-    traindId: number;
+    trainId: number;
     wagonNumber: number;
     wagonType: WagonType;
     seatsAmount: number;
