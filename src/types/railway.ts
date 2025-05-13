@@ -25,7 +25,7 @@ export interface AdditionalService {
 
 export type PaymentStatus = 'success' | 'pending' | 'fail';
 
-export type PaymentType = 'googlePay' | 'applePay' | 'bank';
+export type PaymentType = 'Google Pay' | 'Apple Pay' | 'Bank Transfer';
 
 export interface Transaction {
     transactionId: number;

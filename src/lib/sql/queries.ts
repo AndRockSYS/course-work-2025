@@ -28,12 +28,17 @@ export const createClient = `
 INSERT INTO client
 (phoneNumber, name, surname, birthDate, email)
 VALUES (?, ?, ?, ?, ?)
-ON DUPLICATE KEY UPDATE id = id`;
+ON DUPLICATE KEY UPDATE
+	name = VALUES(name),
+    surname = VALUES(surname),
+    birthDate = VALUES(birthDate),
+    email = VALUES(email)
+`;
 
 export const createTicket = `
 INSERT INTO ticket
 (clientId, trainId, wagonId, seatNumber, status)
-VALUES (?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?)
 `;
 
 export const createTransaction = `
@@ -55,6 +60,12 @@ VALUES (?, ?)
 `;
 
 // Custom queries for booking
+
+export const selectTrainById = `
+SELECT *
+FROM train
+WHERE trainId = ?
+`;
 
 export const selectTrains = `
 SELECT train.*, MIN(price) AS startingPrice

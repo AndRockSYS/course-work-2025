@@ -6,12 +6,13 @@ import {
     getDepartureStations,
     getDestinationStations,
     selectFreeSeatsNumberForWagon,
+    selectTrainById,
     selectTrains,
     selectWagonsForTrain,
 } from './queries';
 import { database } from '@/utils/constants';
 
-import { WagonType } from '@/types/railway';
+import { Train, WagonType } from '@/types/railway';
 import { SearchedTrain, SearchedTrainWagon } from '@/types/query';
 
 export async function addTrain(
@@ -66,6 +67,11 @@ export async function fetchedSearchedTrains(
     ]);
 
     return rows as SearchedTrain[];
+}
+
+export async function fetchTrainById(trainId: number): Promise<Train> {
+    const [rows]: any = await database.query(selectTrainById, [trainId]);
+    return rows[0] as Train;
 }
 
 export async function fetchWagonByTrain(trainId: number): Promise<SearchedTrainWagon[]> {
