@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { useRouter } from 'next/navigation';
 
@@ -18,7 +18,6 @@ export default function Passenger() {
     const dispatch = useAppDispatch();
     const ticket = useAppSelector((state: RootState) => state.ticketReducer);
 
-    const [date, setDate] = useState('');
     const dateRef = useRef<HTMLInputElement>(null);
 
     const { data: services } = useQuery({
@@ -29,7 +28,7 @@ export default function Passenger() {
 
     return (
         <main className='p-4 flex flex-col gap-y-4'>
-            <h4 className='text-2xl'>Інформація про пасажира</h4>
+            <h4 className='font-extrabold text-xl text-center'>Інформація про пасажира</h4>
             <section className='flex flex-col gap-4'>
                 <div className='grid grid-cols-2 gap-4'>
                     <input
@@ -37,6 +36,7 @@ export default function Passenger() {
                         type='text'
                         id='name'
                         placeholder="Ім'я"
+                        value={ticket.name}
                         onInput={(event) =>
                             dispatch(
                                 setTextValue({ type: 'name', value: event.currentTarget.value })
@@ -48,6 +48,7 @@ export default function Passenger() {
                         type='text'
                         id='surname'
                         placeholder='Прізвище'
+                        value={ticket.surname}
                         onInput={(event) =>
                             dispatch(
                                 setTextValue({ type: 'surname', value: event.currentTarget.value })
@@ -72,6 +73,7 @@ export default function Passenger() {
                     className='input'
                     type='text'
                     id='mail'
+                    value={ticket.email}
                     placeholder='Електронна пошта'
                     onInput={(event) =>
                         dispatch(setTextValue({ type: 'email', value: event.currentTarget.value }))
@@ -82,13 +84,15 @@ export default function Passenger() {
                     type='text'
                     id='date'
                     onClick={() => dateRef.current?.showPicker()}
-                    value={date}
+                    value={ticket.date}
                     placeholder='Дата народження'
                 />
                 <input
                     className='hidden'
                     ref={dateRef}
-                    onInput={(event) => setDate(event.currentTarget.value)}
+                    onInput={(event) =>
+                        dispatch(setTextValue({ type: 'date', value: event.currentTarget.value }))
+                    }
                     type='date'
                     id='birth-date'
                 />
