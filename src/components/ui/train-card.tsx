@@ -53,11 +53,7 @@ export default function TrainCard({ train }: Props) {
                     <figure
                         className={twMerge('p-4 rounded-xl gap-y-1.5 bg-tetriary')}
                         key={wagon.wagonId}
-                        onClick={() =>
-                            dispatch(
-                                setTrainWagon({ trainId: train.trainId, wagonId: wagon.wagonId })
-                            )
-                        }
+                        onClick={() => dispatch(setTrainWagon(wagon))}
                     >
                         <div className='text-lg font-extrabold'>
                             <h3>{wagon.wagonType}</h3>

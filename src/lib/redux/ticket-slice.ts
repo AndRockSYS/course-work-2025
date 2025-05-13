@@ -1,27 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { PaymentType, Wagon } from '@/types/railway';
+
 export const ticketSlice = createSlice({
     name: 'ticketBooking',
     initialState: {
-        trainId: -1,
-        wagonId: -1,
-        seatNumber: 0,
+        wagon: undefined as Wagon | undefined,
+        seatNumber: -1,
 
         name: '',
         surname: '',
         email: '',
         phoneNumber: '+380',
+        date: '',
         services: [] as number[],
+
+        paymentMethod: 'Google Pay' as PaymentType,
     },
     reducers: {
         setTrainWagon(state, action) {
-            const { trainId, wagonId } = action.payload;
-            state.trainId = trainId;
-            state.wagonId = wagonId;
+            state.wagon = action.payload;
         },
         removeTrainWagon(state) {
-            state.trainId = -1;
-            state.wagonId = -1;
+            state.wagon = undefined;
         },
         setSeatNumber(state, action) {
             state.seatNumber = action.payload;
@@ -38,6 +39,9 @@ export const ticketSlice = createSlice({
             if (checked) state.services.push(serviceId);
             else state.services = state.services.filter((service) => service != serviceId);
         },
+        setPaymentMethod(state, action) {
+            state.paymentMethod = action.payload;
+        },
     },
 });
 
@@ -48,6 +52,7 @@ export const {
     setPhone,
     setTextValue,
     manangeService,
+    setPaymentMethod,
 } = ticketSlice.actions;
 
 export default ticketSlice.reducer;

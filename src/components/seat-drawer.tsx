@@ -16,11 +16,14 @@ export default function SeatDrawer() {
     const router = useRouter();
 
     const dispatch = useAppDispatch();
-    const wagonId = useAppSelector((state: RootState) => state.ticketReducer.wagonId);
+    const wagonId = useAppSelector((state: RootState) => state.ticketReducer.wagon?.wagonId);
 
     const { data: freeSeats } = useQuery({
         queryKey: ['free', 'seats', wagonId],
-        queryFn: async () => await fetchFreeSeatsNumbers(wagonId),
+        queryFn: async () => {
+            if (wagonId) return await fetchFreeSeatsNumbers(wagonId);
+            return [];
+        },
         initialData: [],
     });
 
@@ -52,13 +55,13 @@ export default function SeatDrawer() {
             }
             className={twMerge(
                 'fixed top-0 left-0 w-dvw h-dvh transition-all duration-500',
-                wagonId == -1 ? 'pointer-events-none' : 'backdrop-blur-sm'
+                !wagonId ? 'pointer-events-none' : 'backdrop-blur-sm'
             )}
         >
             <figure
                 className={twMerge(
                     'absolute bottom-0 w-dvw h-1/3 p-4 flex flex-col items-center justify-between bg-background transition-all duration-500 rounded-t-lg',
-                    wagonId == -1 ? 'translate-y-full' : ''
+                    !wagonId ? 'translate-y-full' : ''
                 )}
             >
                 <h3 className='text-xl'>Виберіть місце</h3>
