@@ -21,31 +21,37 @@ VALUES (?, ?, ?, ?)
 export const createWagon = `
 INSERT INTO wagon
 (wagonNumber, wagonType, seatsAmount, price, trainId)
-VALUES(?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?)
 `;
 
 export const createClient = `
 INSERT INTO client
 (phoneNumber, name, surname, birthDate, email)
-(?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?)
 ON DUPLICATE KEY UPDATE id = id`;
 
 export const createTicket = `
 INSERT INTO ticket
 (clientId, trainId, wagonId, seatNumber, status)
-(?, ?, ?, ?)
+VALUES (?, ?, ?, ?)
 `;
 
 export const createTransaction = `
 INSERT INTO transaction
 (value, paymentType, paymentStatus, paymentDate, ticketId)
-(?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?)
+`;
+
+export const createService = `
+INSERT INTO additionalService
+(serviceName, price)
+VALUES (?, ?)
 `;
 
 export const addTicketService = `
 INSERT INTO ticketService
 (ticketId, serviceId)
-(?, ?)
+VALUES (?, ?)
 `;
 
 // Custom queries for booking
