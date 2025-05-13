@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 interface Props {
-    placeholder: string;
+    placeholder?: string;
     name: string;
     image?: string;
 
@@ -22,9 +22,11 @@ export default function Select({ placeholder, name, image, options, setValue, va
                 value={value}
                 onInput={(event) => setValue(event.currentTarget.value)}
             >
-                <option value='' disabled>
-                    {placeholder}
-                </option>
+                {placeholder && (
+                    <option value='' disabled>
+                        {placeholder}
+                    </option>
+                )}
                 {options.map((option, index) => (
                     <option key={option + index} value={option}>
                         {option}
