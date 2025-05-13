@@ -20,7 +20,7 @@ export default async function Trains({ searchParams }: Props) {
     return (
         <main className='p-4 flex flex-col gap-y-2'>
             <div className='mb-2 flex items-end justify-between'>
-                <h2 className=' text-3xl'>
+                <h2 className='text-2xl'>
                     {from} → {to}
                 </h2>
                 <h3>{date}</h3>

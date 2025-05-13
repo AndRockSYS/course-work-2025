@@ -51,7 +51,7 @@ export default function SeatDrawer() {
                 (event.target as HTMLElement).id == 'background' && dispatch(removeTrainWagon())
             }
             className={twMerge(
-                'absolute top-0 left-0 w-dvw h-dvh transition-all duration-500',
+                'fixed top-0 left-0 w-dvw h-dvh transition-all duration-500',
                 wagonId == -1 ? 'pointer-events-none' : 'backdrop-blur-sm'
             )}
         >
