@@ -5,7 +5,13 @@ import Select from '@/components/ui/select';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { useCallback, useRef } from 'react';
 
-import { setArrival, setDeparture, updateWagon, addEmptyWagon } from '@/lib/redux/train-slice';
+import {
+    setArrival,
+    setDeparture,
+    updateWagon,
+    addEmptyWagon,
+    removeLastWagon,
+} from '@/lib/redux/train-slice';
 import { addTrain, addWagon } from '@/lib/sql/train';
 
 import { validateNewTrain } from '@/utils/validator';
@@ -110,12 +116,7 @@ export default function Admin() {
                         type='datetime-local'
                     />
                 </div>
-                <div className='flex items-center justify-between'>
-                    <h4 className='text-lg'>Вагони</h4>
-                    <button className='btn-primary' onClick={() => dispatch(addEmptyWagon())}>
-                        Додати вагон
-                    </button>
-                </div>
+                <h4 className='text-lg'>Вагони</h4>
                 <section className='flex flex-col gap-4'>
                     {train.wagons.map((wagon) => (
                         <div className='grid grid-cols-2 gap-4' key={wagon.wagonNumber}>
@@ -150,6 +151,14 @@ export default function Admin() {
                         </div>
                     ))}
                 </section>
+                <div className='grid grid-cols-2 gap-4'>
+                    <button className='btn-primary' onClick={() => dispatch(addEmptyWagon())}>
+                        Додати вагон
+                    </button>
+                    <button className='btn-primary' onClick={() => dispatch(removeLastWagon())}>
+                        Видалити вагон
+                    </button>
+                </div>
                 <button className='btn-primary' onClick={handleTrainCreation}>
                     Створити потяг
                 </button>

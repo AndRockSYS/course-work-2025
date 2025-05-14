@@ -45,10 +45,14 @@ export const trainSlice = createSlice({
             };
             state.wagons.push(empty);
         },
+        removeLastWagon(state) {
+            state.wagons.pop();
+        },
     },
 });
 
-export const { setDeparture, setArrival, addEmptyWagon, updateWagon } = trainSlice.actions;
+export const { setDeparture, setArrival, addEmptyWagon, updateWagon, removeLastWagon } =
+    trainSlice.actions;
 
 const initial = trainSlice.getInitialState();
 export type TrainCreation = typeof initial;
