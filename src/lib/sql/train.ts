@@ -4,8 +4,10 @@ import {
     createStation,
     createTrain,
     createWagon,
+    getAllActiveTrains,
     getAllStations,
     getStationByName,
+    getTotalSalesByTrainId,
     selectFreeSeatsNumberForWagon,
     selectTrainById,
     selectTrains,
@@ -98,4 +100,14 @@ export async function fetchFreeSeatsNumbers(wagonId: number): Promise<number[]> 
 export async function fetchStations(): Promise<Station[]> {
     const [stations]: any = await database.query(getAllStations);
     return stations as Station[];
+}
+
+export async function fetchAllActiveTrains(): Promise<Train[]> {
+    const [sales] = await database.query(getAllActiveTrains);
+    return sales as Train[];
+}
+
+export async function fetchSalesByTrainId(trainId: number) {
+    const [sales] = await database.query(getTotalSalesByTrainId, [trainId]);
+    return sales;
 }

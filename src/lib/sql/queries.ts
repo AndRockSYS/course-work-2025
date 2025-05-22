@@ -67,7 +67,13 @@ VALUES (?, ?)
 // Custom queries for booking
 
 export const selectTrainById = `
-SELECT *
+SELECT train.*,
+	(
+		SELECT name FROM station WHERE stationId = train.departureStationId
+    ) as departureStation,
+	(
+		SELECT name FROM station WHERE stationId = train.arrivalStationId
+    ) as arrivalStation
 FROM train
 WHERE trainId = ?
 `;
@@ -124,4 +130,31 @@ WHERE seatNumber NOT IN (
     WHERE ticket.wagonId = 1
 )
 ORDER BY seatNumber;
+`;
+
+// Complex queries
+
+export const getAllActiveTrains = `
+SELECT train.*, 
+	(
+		SELECT name FROM station WHERE stationId = train.departureStationId
+    ) as departureStation,
+	(
+		SELECT name FROM station WHERE stationId = train.arrivalStationId
+    ) as arrivalStation
+FROM train
+WHERE train.departureDate > NOW()
+`;
+
+export const getTotalSalesByTrainId = `
+SELECT wagon.wagonNumber, wagon.wagonType, wagon.seatsAmount,
+	(
+		SELECT COUNT(*)
+        FROM ticket
+        WHERE ticket.trainId = train.trainId
+        AND ticket.wagonId = wagon.wagonId
+    ) as seatsBought
+FROM wagon
+JOIN train USING (trainId)
+WHERE trainId = ?
 `;

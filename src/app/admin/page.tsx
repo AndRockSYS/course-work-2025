@@ -15,11 +15,20 @@ import {
     addEmptyWagon,
     removeLastWagon,
 } from '@/lib/redux/train-slice';
-import { addTrain, addWagon, fetchStations, getOrAddStation } from '@/lib/sql/train';
+import {
+    addTrain,
+    addWagon,
+    fetchAllActiveTrains,
+    fetchSalesByTrainId,
+    fetchStations,
+    fetchTrainById,
+    getOrAddStation,
+} from '@/lib/sql/train';
 
 import { validateNewTrain } from '@/utils/validator';
 
 import { RootState } from '@/lib/redux/store';
+import { downloadPdf } from '@/lib/pdf-creator';
 
 export default function Admin() {
     const router = useRouter();
@@ -80,6 +89,25 @@ export default function Admin() {
     return (
         <main className='p-4 flex flex-col gap-8'>
             <h4 className='font-extrabold text-xl text-center'>Адміністративна панель</h4>
+            <section className='flex flex-col gap-4'>
+                <h3 className='text-xl'>Отримання звіту</h3>
+                <button
+                    className='btn-primary'
+                    onClick={async () => {
+                        const activeTrains = await fetchAllActiveTrains();
+
+                        const sales: any[] = [];
+                        for (let train of activeTrains) {
+                            const trainSales = await fetchSalesByTrainId(train.trainId);
+                            sales.push(trainSales);
+                        }
+
+                        downloadPdf(activeTrains, sales);
+                    }}
+                >
+                    Отримати звіт для усіх активних потягів
+                </button>
+            </section>
             <section className='flex flex-col gap-4'>
                 <h3 className='text-xl'>Створення рейсу</h3>
                 <div className='grid grid-cols-2 gap-4'>
