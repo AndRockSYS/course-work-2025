@@ -1,9 +1,12 @@
 'use client';
 
 import Select from '@/components/ui/select';
+import SelectStation from './select-station';
 
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { useCallback, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 import {
     setArrival,
@@ -12,18 +15,28 @@ import {
     addEmptyWagon,
     removeLastWagon,
 } from '@/lib/redux/train-slice';
-import { addTrain, addWagon } from '@/lib/sql/train';
+import { addTrain, addWagon, fetchStations, getOrAddStation } from '@/lib/sql/train';
 
 import { validateNewTrain } from '@/utils/validator';
 
 import { RootState } from '@/lib/redux/store';
 
 export default function Admin() {
+    const router = useRouter();
     const dispatch = useAppDispatch();
     const train = useAppSelector((state: RootState) => state.trainReducer);
 
     const departureRef = useRef<HTMLInputElement>(null);
     const arrivalRef = useRef<HTMLInputElement>(null);
+
+    const { data: stations } = useQuery({
+        queryKey: ['stations'],
+        queryFn: async () => {
+            const stations = await fetchStations();
+            return stations.map((station) => station.name);
+        },
+        initialData: [],
+    });
 
     const handleNumber = useCallback(
         (event: React.FormEvent<HTMLInputElement>, wagonNumber: number) => {
@@ -37,11 +50,14 @@ export default function Admin() {
         try {
             validateNewTrain(train);
 
+            const departureId = await getOrAddStation(train.departureStation);
+            const arrivalId = await getOrAddStation(train.arrivalStation);
+
             const trainId = await addTrain(
                 new Date(train.departureDate),
                 new Date(train.arrivalDate),
-                train.departureStation,
-                train.arrivalStation
+                departureId,
+                arrivalId
             );
 
             for (let wagon of train.wagons) {
@@ -55,6 +71,7 @@ export default function Admin() {
             }
 
             alert('Успішно');
+            router.push('/');
         } catch (error: any) {
             alert(error.message);
         }
@@ -66,27 +83,17 @@ export default function Admin() {
             <section className='flex flex-col gap-4'>
                 <h3 className='text-xl'>Створення рейсу</h3>
                 <div className='grid grid-cols-2 gap-4'>
-                    <input
-                        className='input col-span-2'
-                        type='text'
-                        value={train.departureStation}
-                        placeholder='Станція відправлення'
-                        onInput={(event) =>
-                            dispatch(setDeparture({ station: event.currentTarget.value }))
-                        }
-                    />
-                    <input
-                        className='input col-span-2'
-                        type='text'
-                        value={train.arrivalStation}
-                        placeholder='Станція прибуття'
-                        onInput={(event) =>
-                            dispatch(setArrival({ station: event.currentTarget.value }))
-                        }
+                    <SelectStation stations={stations} dispatch={dispatch} train={train} />
+                    <SelectStation
+                        stations={stations}
+                        dispatch={dispatch}
+                        train={train}
+                        isArrival
                     />
                     <input
                         className='input'
                         type='text'
+                        readOnly
                         value={train.departureDate.replace('T', ' ')}
                         onClick={() => departureRef.current?.showPicker()}
                         placeholder='Дата відправлення'
@@ -94,15 +101,15 @@ export default function Admin() {
                     <input
                         className='input'
                         type='text'
+                        readOnly
                         value={train.arrivalDate.replace('T', ' ')}
                         onClick={() => arrivalRef.current?.showPicker()}
                         placeholder='Дата прибуття'
                     />
-
                     <input
                         className='hidden'
                         ref={departureRef}
-                        onInput={(event) =>
+                        onChange={(event) =>
                             dispatch(setDeparture({ date: event.currentTarget.value }))
                         }
                         type='datetime-local'
@@ -110,7 +117,7 @@ export default function Admin() {
                     <input
                         className='hidden'
                         ref={arrivalRef}
-                        onInput={(event) =>
+                        onChange={(event) =>
                             dispatch(setArrival({ date: event.currentTarget.value }))
                         }
                         type='datetime-local'

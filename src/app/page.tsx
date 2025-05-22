@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Select from '@/components/ui/select';
 
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 
@@ -21,8 +21,10 @@ export default function Home() {
     const { data: stations } = useQuery({
         queryKey: ['stations'],
         queryFn: async () => await fetchStations(),
-        initialData: [[], []],
+        initialData: [],
     });
+
+    const stationNames = useMemo(() => stations.map((station) => station.name), [stations]);
 
     return (
         <main className='p-4 [&>*]:w-full flex flex-col gap-y-8'>
@@ -31,7 +33,7 @@ export default function Home() {
                 <Select
                     placeholder='Станція відправлення'
                     name='from'
-                    options={stations[0]}
+                    options={stationNames.filter((station) => station != arrivalStation)}
                     setValue={setDepartureStation}
                     value={departureStation}
                     image='/icons/departure.svg'
@@ -39,7 +41,7 @@ export default function Home() {
                 <Select
                     placeholder='Станція прибуття'
                     name='to'
-                    options={stations[1]}
+                    options={stationNames.filter((station) => station != departureStation)}
                     setValue={setArrivalStation}
                     value={arrivalStation}
                     image='/icons/arrival.svg'

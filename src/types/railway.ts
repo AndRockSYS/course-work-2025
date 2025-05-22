@@ -36,12 +36,19 @@ export interface Transaction {
     ticketId: number;
 }
 
+export interface Station {
+    stationId: number;
+    name: string;
+}
+
 export interface Train {
     trainId: number;
     departureDate: Date;
     arrivalDate: Date;
     departureStation: string;
     arrivalStation: string;
+    departureStationId: number;
+    arrivalStationId: number;
 }
 
 export type WagonType = 'Плацкарт' | 'Купе' | 'Люкс';

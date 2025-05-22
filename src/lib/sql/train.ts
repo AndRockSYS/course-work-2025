@@ -1,10 +1,11 @@
 'use server';
 
 import {
+    createStation,
     createTrain,
     createWagon,
-    getDepartureStations,
-    getDestinationStations,
+    getAllStations,
+    getStationByName,
     selectFreeSeatsNumberForWagon,
     selectTrainById,
     selectTrains,
@@ -12,26 +13,36 @@ import {
 } from './queries';
 import { database } from '@/utils/constants';
 
-import { Train, WagonType } from '@/types/railway';
+import { Station, Train, WagonType } from '@/types/railway';
 import { SearchedTrain, SearchedTrainWagon } from '@/types/query';
+
+export async function getOrAddStation(name: string): Promise<number> {
+    const [station]: any = await database.query(getStationByName, [name]);
+
+    let stationId = station ? station[0].stationId : 0;
+
+    if (!station) {
+        const [result]: any = await database.query(createStation, [name]);
+        stationId = result.insertId;
+    }
+
+    return stationId;
+}
 
 export async function addTrain(
     departureDate: Date,
     arrivalDate: Date,
-    departureStation: string,
-    arrivalStation: string
+    departureStationId: number,
+    arrivalStationId: number
 ): Promise<number> {
     if (isNaN(arrivalDate.getTime()) || isNaN(departureDate.getTime()))
         throw new Error('Invalid date format for arrival or departure');
 
-    if (departureStation.length > 45 || arrivalStation.length > 45)
-        throw new Error('Station names exceed 45 characters');
-
     const [result] = await database.query(createTrain, [
         arrivalDate,
         departureDate,
-        departureStation,
-        arrivalStation,
+        departureStationId,
+        arrivalStationId,
     ]);
 
     return (result as any).insertId;
@@ -81,15 +92,10 @@ export async function fetchWagonByTrain(trainId: number): Promise<SearchedTrainW
 
 export async function fetchFreeSeatsNumbers(wagonId: number): Promise<number[]> {
     const [rows]: any = await database.query(selectFreeSeatsNumberForWagon, [wagonId, wagonId]);
-    return rows.map((obj: any) => obj.seatNumber) as number[];
+    return rows.map((obj: any) => obj.seatNumber).filter((seat: number) => seat > 0) as number[];
 }
 
-export async function fetchStations(): Promise<string[][]> {
-    const [from]: any = await database.query(getDepartureStations);
-    const [to]: any = await database.query(getDestinationStations);
-
-    return [
-        from.map((obj: any) => obj.departureStation),
-        to.map((obj: any) => obj.arrivalStation),
-    ] as any;
+export async function fetchStations(): Promise<Station[]> {
+    const [stations]: any = await database.query(getAllStations);
+    return stations as Station[];
 }

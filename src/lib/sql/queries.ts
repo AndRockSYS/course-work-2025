@@ -2,19 +2,24 @@
 
 export const getAdditionalServices = `SELECT * FROM additionalService`;
 
-export const getDepartureStations = `
-SELECT DISTINCT departureStation from train
-`;
+export const getAllStations = 'SELECT * FROM station';
 
-export const getDestinationStations = `
-SELECT DISTINCT arrivalStation from train
+export const getStationByName = `
+SELECT * FROM station
+WHERE name = ?
 `;
 
 // Data creation
 
+export const createStation = `
+INSERT INTO station
+(name)
+VALUES (?)
+`;
+
 export const createTrain = `
 INSERT INTO train
-(arrivalDate, departureDate, departureStation, arrivalStation)
+(arrivalDate, departureDate, departureStationId, arrivalStationId)
 VALUES (?, ?, ?, ?)
 `;
 
@@ -68,11 +73,17 @@ WHERE trainId = ?
 `;
 
 export const selectTrains = `
-SELECT train.*, MIN(price) AS startingPrice
+SELECT train.*, MIN(price) AS startingPrice, 
+	(
+		SELECT name FROM station WHERE stationId = train.departureStationId
+    ) as departureStation,
+	(
+		SELECT name FROM station WHERE stationId = train.arrivalStationId
+    ) as arrivalStation
 FROM wagon, train
-WHERE train.departureStation = ?
-AND train.arrivalStation = ?
-AND DATE(train.departureDate) = ?
+WHERE train.departureStationId = 2
+AND train.arrivalStationId = 1
+AND DATE(train.departureDate) = '2025-05-31'
 AND train.departureDate > NOW()
 AND seatsAmount > (
 	SELECT COUNT(*)
@@ -80,7 +91,6 @@ AND seatsAmount > (
 	WHERE ticket.wagonId = wagon.wagonId
     )
 GROUP BY train.trainId;
-
 `;
 
 export const selectWagonsForTrain = `
@@ -96,14 +106,14 @@ HAVING freeSeats > 0
 
 export const selectFreeSeatsNumberForWagon = `
 WITH RECURSIVE allSeats AS (
-    SELECT 1 AS seatNumber
+    SELECT 0 AS seatNumber
     UNION ALL
     SELECT seatNumber + 1
     FROM allSeats
     WHERE seatNumber < (
-		SELECT seatsAmount
+        SELECT COALESCE(seatsAmount, 0)
         FROM wagon
-        WHERE wagon.wagonId = ?
+        WHERE wagon.wagonId = 1
     )
 )
 SELECT seatNumber
@@ -111,7 +121,7 @@ FROM allSeats
 WHERE seatNumber NOT IN (
     SELECT seatNumber 
     FROM ticket
-    WHERE ticket.wagonId = ?
+    WHERE ticket.wagonId = 1
 )
-ORDER BY seatNumber
+ORDER BY seatNumber;
 `;

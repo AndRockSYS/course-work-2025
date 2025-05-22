@@ -20,7 +20,7 @@ export default function Select({ placeholder, name, image, options, setValue, va
                 name={name}
                 id={name}
                 value={value}
-                onInput={(event) => setValue(event.currentTarget.value)}
+                onChange={(event) => setValue(event.currentTarget.value)}
             >
                 {placeholder && (
                     <option value='' disabled>
