@@ -11,8 +11,14 @@ export function downloadPdf(trains: Train[], rows: any[][]) {
         if (!rowData || rowData.length === 0) {
             throw new Error(`Rows array for train ${train.trainId} is empty or undefined`);
         }
-
         const tableBody = [Object.keys(rowData[0]), ...rowData.map((row) => Object.values(row))];
+
+        let totalSeats = 0;
+        let totalSales = 0;
+        rowData.map(({ seatsAmount, seatsBought }) => {
+            totalSeats += seatsAmount;
+            totalSales += seatsBought;
+        });
 
         return [
             {
@@ -26,6 +32,7 @@ export function downloadPdf(trains: Train[], rows: any[][]) {
                 },
                 margin: [100, 0, 100, 10],
             },
+            { text: `Загалом ${totalSeats} місць, продано ${totalSales} квитків` },
         ];
     });
 
